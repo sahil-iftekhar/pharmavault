@@ -203,7 +203,7 @@ CSRF_COOKIE_SECURE = True  # Ensures the CSRF cookie is sent only over HTTPS
 CSRF_COOKIE_HTTPONLY = True  # Must be False since JavaScript needs to read the token
 CSRF_COOKIE_SAMESITE = 'Lax' # Prevent cross-origin requests
 
-AUTH_USER_MODEL = 'blog_api.User'
+AUTH_USER_MODEL = 'pharmacy_api.User'
 
 TESTING = os.getenv("TESTING", 'False') == 'True'
 
