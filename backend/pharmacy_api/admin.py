@@ -11,7 +11,7 @@ from .models import (
     Supply,
     Feedback,
     OrderedMedicine,
-    PrescriptionImage,
+    OrderedPrescriptionImage,
     Payment,
     Cart
 )
@@ -68,6 +68,6 @@ admin.site.register(Order)
 admin.site.register(Payment)
 admin.site.register(Cart)
 admin.site.register(OrderedMedicine)
-admin.site.register(PrescriptionImage)
+admin.site.register(OrderedPrescriptionImage)
 admin.site.register(Supply)
 admin.site.register(Feedback)

@@ -112,11 +112,12 @@ class Supplier(User):
     
     def save(self, *args, **kwargs):
         """Running Validators before saving"""
+        self.is_staff = True
         self.full_clean()
         super().save(*args, **kwargs)
     
     def __str__(self):
-        return self.name
+        return self.email
 
 class Medicine(models.Model):
     """Medicine Model"""
@@ -161,15 +162,47 @@ class Order(models.Model):
         choices=DELIVERY_TYPE,
         default='once',
     )
+    medicines = models.ManyToManyField(Medicine, through='OrderedMedicine')
+    prescription_images = models.ManyToManyField('OrderedPrescriptionImage', blank=True, related_name='ordered_prescription_images')
     slug = models.SlugField(unique=True, blank=True, null=True)
     
     def save(self, *args, **kwargs):
         """Running Validators before saving"""
+        if self.delivery_date < self.placed_date:
+            raise ValidationError('Delivery date cannot be earlier than the placed date.')
+        
         self.full_clean()
         super().save(*args, **kwargs)
     
     def __str__(self):
         return f"Order #{self.id}"
+    
+class OrderedMedicine(models.Model):
+    """Ordered Medicine Model"""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    
+    def save(self, *args, **kwargs):
+        """Running Validators before saving"""
+        self.full_clean()
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"Ordered Medicine #{self.id}"
+    
+class OrderedPrescriptionImage(models.Model):
+    """Prescription Model"""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='prescriptions_images/')
+    
+    def save(self, *args, **kwargs):
+        """Running Validators before saving"""
+        self.full_clean()
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"Prescription #{self.id}"
 
 class Supply(models.Model):
     """Supply Model"""
@@ -204,33 +237,6 @@ class Feedback(models.Model):
         
     def __str__(self):
         return f"Feedback #{self.id}"
-    
-class OrderedMedicine(models.Model):
-    """Ordered Medicine Model"""
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
-    quantity = models.IntegerField()
-    
-    def save(self, *args, **kwargs):
-        """Running Validators before saving"""
-        self.full_clean()
-        super().save(*args, **kwargs)
-        
-    def __str__(self):
-        return f"Ordered Medicine #{self.id}"
-    
-class PrescriptionImage(models.Model):
-    """Prescription Model"""
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='prescriptions_images/')
-    
-    def save(self, *args, **kwargs):
-        """Running Validators before saving"""
-        self.full_clean()
-        super().save(*args, **kwargs)
-        
-    def __str__(self):
-        return f"Prescription #{self.id}"
     
 class Payment(models.Model):
     """Payment Model"""
