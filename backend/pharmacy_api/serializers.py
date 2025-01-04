@@ -1,6 +1,7 @@
 """Serializers For Blog API."""
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 from .models import (
     Medicine,
     Customer,
@@ -103,7 +104,7 @@ class OrderedMedicineSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderedMedicine
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'order']
         
 class PrescriptionImageSerializer(serializers.ModelSerializer):
     """Prescription Serializer."""
@@ -111,7 +112,7 @@ class PrescriptionImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderedPrescriptionImage
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'order']
         
     def validate_prescription_image(self, value):
         max_size = 5 * 1024 * 1024
@@ -135,18 +136,20 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'customer', 'active', 'status', 'placed_date', 
                   'delivery_date', 'delivery_type', 'medicines', 
                   'prescription_images', 'slug']
-        read_only_fields = ['id']
-        
-    # def validate_delivery_date(self, value):
-    #     """Ensure delivery_date is not earlier than placed_date"""
-    #     if value < self.instance.placed_date:
-    #         raise serializers.ValidationError("Delivery date cannot be earlier than the placed date.")
-    #     return value
+        read_only_fields = ['id', 'customer']
         
     def _get_or_create_medicines(self, medicines, order):
         """Handle getting or creating medicines as needed."""
         for medicine in medicines:
+            medicine_id = medicine.pop('medicine')
+            medicine = Medicine.objects.get(id=medicine_id)
+            
+            if medicine is None:
+                raise serializers.ValidationError("Medicine does not exist.")
+            
             medicine_obj, _ = Medicine.objects.get_or_create(
+                order = order,
+                medicine = medicine,
                 **medicine
             )
             order.medicines.add(medicine_obj)
@@ -155,6 +158,7 @@ class OrderSerializer(serializers.ModelSerializer):
         """Handle getting or creating prescription images as needed."""
         for prescription_image in prescription_images:
             prescription_image_obj, _ = OrderedPrescriptionImage.objects.get_or_create(
+                order = order,
                 **prescription_image
             )
             order.prescription_images.add(prescription_image_obj)
@@ -162,6 +166,12 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         medicines = validated_data.pop('medicines', [])
         prescription_images = validated_data.pop('prescription_images', [])
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
         order = Order.objects.create(**validated_data)
         self._get_or_create_medicines(medicines, order)
         self._get_or_create_prescription_images(prescription_images, order)
@@ -172,6 +182,13 @@ class OrderSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         medicines = validated_data.pop('medicines', [])
         prescription_images = validated_data.pop('prescription_images', [])
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        
         instance = super().update(instance, validated_data)
         
         if medicines:
@@ -199,7 +216,27 @@ class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedback
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'customer']
+        
+    def create(self, validated_data):
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        instance = super().update(instance, validated_data)
+        instance.save()
+        return instance
     
 class PaymentSerializer(serializers.ModelSerializer):
     """Payment Serializer."""
@@ -207,7 +244,28 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'customer']
+        
+    def create(self, validated_data):
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        instance = super().update(instance, validated_data)
+        instance.save()
+        return instance
+    
         
 class CartSerializer(serializers.ModelSerializer):
     """Cart Serializer."""
@@ -215,4 +273,24 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'customer']
+        
+    def create(self, validated_data):
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        
+        if not user or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = user
+        instance = super().update(instance, validated_data)
+        instance.save()
+        return instance

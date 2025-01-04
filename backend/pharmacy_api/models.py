@@ -244,6 +244,7 @@ class Payment(models.Model):
         ('ondelivery', 'On Delivery'),
         ('bkash', 'Bkash'),
     ]
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     payment_method = models.CharField(
         max_length=255,
