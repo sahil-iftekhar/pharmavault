@@ -25,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ['id', 'email', 'name', 'password', 'phone', 'address',
                   'is_active', 'is_staff', 'is_superuser', 'slug']
-        read_only_fields = ['id', 'is_superuser']
+        read_only_fields = ['id', 'is_superuser', 'slug']
         extra_kwargs = {
             'password': {
                 'write_only': True,
@@ -96,7 +96,7 @@ class MedicineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Medicine
         fields = '__all__'
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'slug']
         
 class OrderedMedicineSerializer(serializers.ModelSerializer):
     """Ordered Medicine Serializer."""
@@ -136,7 +136,7 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'customer', 'active', 'status', 'placed_date', 
                   'delivery_date', 'delivery_type', 'medicines', 
                   'prescription_images', 'slug']
-        read_only_fields = ['id', 'customer']
+        read_only_fields = ['id', 'customer', 'placed_date', 'slug']
         
     def _get_or_create_medicines(self, medicines, order):
         """Handle getting or creating medicines as needed."""
@@ -249,7 +249,7 @@ class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = '__all__'
-        read_only_fields = ['id', 'customer']
+        read_only_fields = ['id', 'customer', 'slug']
         
     def create(self, validated_data):
         user = self.context['request'].user
@@ -278,7 +278,7 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = '__all__'
-        read_only_fields = ['id', 'customer']
+        read_only_fields = ['id', 'customer', 'slug']
         
     def create(self, validated_data):
         user = self.context['request'].user

@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email, MinValueValidator, MaxValueValidator
+from django.utils.timezone import now
 import re
 
 
@@ -168,7 +169,7 @@ class Order(models.Model):
     
     def save(self, *args, **kwargs):
         """Running Validators before saving"""
-        if self.delivery_date < self.placed_date:
+        if self.delivery_date < now().date():
             raise ValidationError('Delivery date cannot be earlier than the placed date.')
         
         self.full_clean()
