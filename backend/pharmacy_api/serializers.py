@@ -167,11 +167,16 @@ class OrderSerializer(serializers.ModelSerializer):
         medicines = validated_data.pop('medicines', [])
         prescription_images = validated_data.pop('prescription_images', [])
         user = self.context['request'].user
-        
+
         if not user or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
+        customer = Customer.objects.get(email=user)
+        
+        if not customer:
+            raise PermissionDenied("Customer does not exist.")
+        
+        validated_data['customer'] = customer
         order = Order.objects.create(**validated_data)
         self._get_or_create_medicines(medicines, order)
         self._get_or_create_prescription_images(prescription_images, order)
