@@ -166,8 +166,8 @@ class MedicineViewSet(ModelViewSet):
     
     def create(self, request, *args, **kwargs):
         current_user = self.request.user
-        
-        if isinstance(current_user, Customer):
+
+        if Customer.objects.filter(email=current_user.id).exists():
             return Response(
                 {'error': 'You do not have permission to create a medicine.'},
                 status=status.HTTP_403_FORBIDDEN,
