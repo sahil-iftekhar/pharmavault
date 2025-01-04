@@ -163,7 +163,7 @@ class Order(models.Model):
         choices=DELIVERY_TYPE,
         default='once',
     )
-    medicines = models.ManyToManyField(Medicine, through='OrderedMedicine')
+    medicines = models.ManyToManyField('OrderedMedicine', related_name='ordered_medicines')
     prescription_images = models.ManyToManyField('OrderedPrescriptionImage', blank=True, related_name='ordered_prescription_images')
     slug = models.SlugField(unique=True, blank=True, null=True)
     

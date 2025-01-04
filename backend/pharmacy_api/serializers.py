@@ -140,24 +140,28 @@ class OrderSerializer(serializers.ModelSerializer):
         
     def _get_or_create_medicines(self, medicines, order):
         """Handle getting or creating medicines as needed."""
+
         for medicine in medicines:
-            medicine_id = medicine.pop('medicine')
-            medicine = Medicine.objects.get(id=medicine_id)
+            medicine_name = medicine.pop('medicine')
+            print(medicine_name)
+            medicine_obj = Medicine.objects.get(name=medicine_name)
+            print(medicine_obj)
             
-            if medicine is None:
+            if medicine_obj is None:
                 raise serializers.ValidationError("Medicine does not exist.")
             
-            medicine_obj, _ = Medicine.objects.get_or_create(
+            ordered_medicine_obj = OrderedMedicine.objects.create(
                 order = order,
-                medicine = medicine,
+                medicine = medicine_obj,
                 **medicine
             )
-            order.medicines.add(medicine_obj)
+            print(ordered_medicine_obj)
+            order.medicines.add(ordered_medicine_obj)
             
     def _get_or_create_prescription_images(self, prescription_images, order):
         """Handle getting or creating prescription images as needed."""
         for prescription_image in prescription_images:
-            prescription_image_obj, _ = OrderedPrescriptionImage.objects.get_or_create(
+            prescription_image_obj = OrderedPrescriptionImage.objects.create(
                 order = order,
                 **prescription_image
             )
