@@ -137,11 +137,11 @@ class OrderSerializer(serializers.ModelSerializer):
                   'prescription_images', 'slug']
         read_only_fields = ['id']
         
-    def validate_delivery_date(self, value):
-        """Ensure delivery_date is not earlier than placed_date"""
-        if value < self.instance.placed_date:
-            raise serializers.ValidationError("Delivery date cannot be earlier than the placed date.")
-        return value
+    # def validate_delivery_date(self, value):
+    #     """Ensure delivery_date is not earlier than placed_date"""
+    #     if value < self.instance.placed_date:
+    #         raise serializers.ValidationError("Delivery date cannot be earlier than the placed date.")
+    #     return value
         
     def _get_or_create_medicines(self, medicines, order):
         """Handle getting or creating medicines as needed."""
