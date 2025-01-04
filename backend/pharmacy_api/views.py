@@ -113,7 +113,7 @@ class CustomerViewSet(UserViewSet):
     
     def get_queryset(self):
         """Filter the queryset to only include customers."""
-        if isinstance(self.request.user, Employee) or self.request.user.is_superuser:
+        if Employee.objects.filter(email=self.request.user).exists() or self.request.user.is_superuser:
             return get_user_model().objects.all()
         return Customer.objects.all()
     
@@ -123,7 +123,7 @@ class EmployeeViewSet(UserViewSet):
     
     def get_queryset(self):
         """Employee and superuser can see all user profiles."""
-        if isinstance(self.request.user, Employee) or self.request.user.is_superuser:
+        if Employee.objects.filter(email=self.request.user).exists() or self.request.user.is_superuser:
             return get_user_model().objects.all()
         return get_user_model().objects.none()
     
@@ -143,7 +143,7 @@ class SupplierViewSet(UserViewSet):
     
     def get_queryset(self):
         """Supplier and superuser can see all user profiles."""
-        if isinstance(self.request.user, Employee) or self.request.user.is_superuser:
+        if Employee.objects.filter(email=self.request.user).exists() or self.request.user.is_superuser:
             return get_user_model().objects.all()
         return Supplier.objects.all()
     
@@ -167,7 +167,7 @@ class MedicineViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         current_user = self.request.user
 
-        if Customer.objects.filter(email=current_user.id).exists():
+        if Customer.objects.filter(email=current_user).exists():
             return Response(
                 {'error': 'You do not have permission to create a medicine.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -176,7 +176,7 @@ class MedicineViewSet(ModelViewSet):
         response = super().create(request, *args, **kwargs)
 
         # If the user is a supplier, create a supply record
-        if isinstance(current_user, Supplier):
+        if Supplier.objects.filter(email=current_user).exists():
             supply_data = {
                 'supplier': current_user.id,  
                 'medicine': response.data['id'],
@@ -195,7 +195,7 @@ class MedicineViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if isinstance(current_user, Customer):
+        if Customer.objects.filter(email=current_user).exists():
             return Response(
                 {'error': 'You do not have permission to update this medicine.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -206,7 +206,7 @@ class MedicineViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if isinstance(current_user, Customer):
+        if Customer.objects.filter(email=current_user).exists():
             return Response(
                 {'error': 'You do not have permission to update this medicine.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -224,7 +224,7 @@ class SupplyViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if isinstance(current_user, Customer):
+        if Customer.objects.filter(email=current_user).exists():
             return Response(
                 {'error': 'You do not have permission to delete this supply object. Only suppliers can delete a supply object.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -242,7 +242,8 @@ class OrderViewSet(ModelViewSet):
     def create(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if not (isinstance(current_user, Customer) or current_user.is_superuser):
+        if not (Customer.objects.filter(email=current_user).exists() 
+                or current_user.is_superuser):
             return Response(
                 {'error': 'You do not have permission to create an order.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -253,7 +254,8 @@ class OrderViewSet(ModelViewSet):
     def update(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if not (isinstance(current_user, Employee) or current_user.is_superuser):
+        if not (Employee.objects.filter(email=current_user).exists() 
+                or current_user.is_superuser):
             return Response(
                 {'error': 'You do not have permission to update this order.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -264,7 +266,8 @@ class OrderViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if not (isinstance(current_user, Employee) or current_user.is_superuser):
+        if not (Employee.objects.filter(email=current_user).exists() 
+                or current_user.is_superuser):
             return Response(
                 {'error': 'You do not have permission to delete this order.'},
                 status=status.HTTP_403_FORBIDDEN,
