@@ -37,6 +37,7 @@ export const refreshToken = async () => {
   const refreshToken = cookieStore.get('refreshToken')?.value;
 
   if (!refreshToken) {
+    await logout();
     throw new Error("Refresh token not found.");
   };
 
@@ -55,6 +56,7 @@ export const refreshToken = async () => {
     return response;
   } catch (error) {
     console.error("Refresh token failed:", error);
+    await logout();
     throw new Error("Refresh token failed.");
   };
 };

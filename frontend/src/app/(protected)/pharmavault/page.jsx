@@ -1,7 +1,12 @@
+import Hero from '@/components/Hero/hero';
+import Services from '@/components/Services/services';
+
 export default function Home() {
-    return (
-        <div>
-            <h1>PharamVault</h1>
-        </div>
-    );
+  return (
+    <>
+      <Hero />
+      <Services />
+    </>
+  );
 }
+

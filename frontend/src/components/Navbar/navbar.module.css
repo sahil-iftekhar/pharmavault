@@ -1,0 +1,42 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background-color: var(--background-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+  
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.links a {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+.links a:hover {
+    color: var(--primary-color);
+}
+
+.loginBtn {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: white !important;
+    border-radius: 4px;
+}
+
+.loginBtn:hover {
+    opacity: 0.9;
+}
+
+  

@@ -9,10 +9,9 @@ import {
 
 export async function middleware(req) {
   const { pathname } = req.nextUrl;
+  console.log(pathname);
 
   const accessToken = req.cookies.get('accessToken')?.value;
-
-  console.log('accessToken', accessToken);
 
   // Check if it's an API authentication route (skip authentication for these routes)
   const isApiAuthRoute = pathname.startsWith(apiAuthPrefix);
