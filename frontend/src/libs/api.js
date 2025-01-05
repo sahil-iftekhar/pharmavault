@@ -1,0 +1,60 @@
+import { fetchClient } from "./fetchClient";
+import { cookies } from 'next/headers';
+
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export const login = async (credentials) => {
+  try {
+    const response = await fetchClient(`${API_BASE_URL}/login/`, {
+      method: "POST",
+      body: JSON.stringify(credentials),
+    });
+
+    if (response.access && response.refresh && response.user_role) {
+      const cookieStore = await cookies();
+      cookieStore.set('accessToken', response.access, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+      cookieStore.set('refreshToken', response.refresh, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+      cookieStore.set('userRole', response.user_role, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    };
+
+    return response;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw new Error("Invalid credentials.");
+  };
+};
+
+export const logout = async () => {
+  const cookieStore = await cookies();
+  cookieStore.delete('accessToken');
+  cookieStore.delete('refreshToken');
+  cookieStore.delete('userRole');
+};
+
+export const refreshToken = async () => {
+  const cookieStore = await cookies();
+  const refreshToken = cookieStore.get('refreshToken')?.value;
+
+  if (!refreshToken) {
+    throw new Error("Refresh token not found.");
+  };
+
+  try {
+    const response = await fetchClient(`${API_BASE_URL}/token/refresh/`, {
+      method: "POST",
+      body: JSON.stringify({ refresh: refreshToken }),
+    });
+
+    if (response.access && response.refresh) {
+      const cookieStore = await cookies();
+      cookieStore.set('accessToken', response.access, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+      cookieStore.set('refreshToken', response.refresh, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    };
+
+    return response;
+  } catch (error) {
+    console.error("Refresh token failed:", error);
+    throw new Error("Refresh token failed.");
+  };
+};
