@@ -117,6 +117,17 @@ class CustomerViewSet(UserViewSet):
             return get_user_model().objects.all()
         return Customer.objects.all()
     
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        email = request.data.get('email')
+        if get_user_model().objects.filter(email=email).exists():
+            return Response(
+                {'error': 'User with this email already exists.'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+        return super().create(request, *args, **kwargs)
+    
 class EmployeeViewSet(UserViewSet):
     """Employee ViewSet"""
     serializer_class = EmployeeSerializer

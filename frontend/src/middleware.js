@@ -38,11 +38,8 @@ export async function middleware(req) {
     return NextResponse.next(); // Allow access to login/register if not logged in
   };
 
-  // Check if it's a public route
-  const isPublicRoute = publicRoutes.includes(pathname);
-
   // Redirect unauthenticated users from protected routes to the login page
-  if (!isLoggedIn && !isPublicRoute) {
+  if (!isLoggedIn) {
     console.log('User is not logged in, redirecting to /auth/login');
     // Prevent redirect loop if already at the login page
     if (pathname === '/auth/login') {

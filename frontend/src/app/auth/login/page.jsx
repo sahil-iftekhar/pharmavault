@@ -19,10 +19,7 @@ export default function loginPage () {
       <div className={styles.container}>
         <form className={styles.form} action={formAction}>
           <h1>Login</h1>
-          {state.errors && <p>{state.errors}</p>}
-          {/* {state.errors && (
-          <ErrorAlert message={state.errors} onClose={() => {}} />
-          )} */}
+          {state.errors && <p className={styles.error}>{state.errors}</p>}
           <div className={styles.formGroup}>
             <input type="text" placeholder="Email" name="email" required/>
           </div>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import styles from './navbar.module.css';
+import { LogoutButton } from '@/components/Button/button';
 
 export default function Navbar() {
   return (
@@ -9,12 +10,11 @@ export default function Navbar() {
       </div>
       <div className={styles.links}>
         <Link href="/pharmavault">Home</Link>
-        <Link href="/products">Products</Link>
-        <Link href="/services">Services</Link>
+        <Link href="/pharmavault/medicine">Medicines</Link>
         <Link href="/contact">Contact</Link>
-        <Link href="/auth/login" className={styles.loginBtn}>Login</Link>
+        <LogoutButton />
       </div>
     </nav>
   );
-}
+};
 

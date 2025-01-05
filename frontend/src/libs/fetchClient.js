@@ -27,9 +27,10 @@ export const fetchClient = async (url, options = {}) => {
         await refreshToken();
         return fetchClient(url, options);
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
-    };
-    
+      console.error("Fetch error:", response);
+      return response;
+    }
+
     return response.json();
   } catch (error) {
     console.error("Fetch error:", error);

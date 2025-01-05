@@ -17,11 +17,6 @@ export default function Services() {
       title: 'Home Delivery',
       description: 'Convenient delivery to your doorstep'
     },
-    {
-      icon: '👨‍⚕️',
-      title: 'Health Consultation',
-      description: 'Expert advice from our pharmacists'
-    }
   ];
 
   return (

@@ -28,15 +28,4 @@
     color: var(--primary-color);
 }
 
-.loginBtn {
-    padding: 0.5rem 1rem;
-    background-color: var(--primary-color);
-    color: white !important;
-    border-radius: 4px;
-}
-
-.loginBtn:hover {
-    opacity: 0.9;
-}
-
   

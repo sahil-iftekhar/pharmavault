@@ -24,7 +24,7 @@ export async function loginUser(prevState, formData) {
     const response = await login(credentials);
     console.log(response);
     
-    if (!response) {
+    if (!response.access || !response.refresh || !response.user_role) {
       console.log("Login failed");
       return {
         errors: "Invalid credentials."

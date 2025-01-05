@@ -60,3 +60,13 @@ export const refreshToken = async () => {
     throw new Error("Refresh token failed.");
   };
 };
+
+export const createUser = async (user) => {
+  const response = await fetchClient(`${API_BASE_URL}/customers/`, {
+    method: "POST",
+    body: JSON.stringify(user),
+  });
+
+  console.log("response", response);
+  return response;
+};
