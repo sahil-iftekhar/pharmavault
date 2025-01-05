@@ -187,7 +187,7 @@ class MedicineViewSet(ModelViewSet):
         response = super().create(request, *args, **kwargs)
 
         # If the user is a supplier, create a supply record
-        if Supplier.objects.filter(email=current_user).exists():
+        if Supplier.objects.filter(email=current_user).exists() or current_user.is_superuser:
             supply_data = {
                 'supplier': current_user.id,  
                 'medicine': response.data['id'],

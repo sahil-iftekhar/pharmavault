@@ -8,6 +8,7 @@ import {
 
 
 export async function middleware(req) {
+  console.log("Middleware triggered");
   const { pathname } = req.nextUrl;
   console.log(pathname);
 

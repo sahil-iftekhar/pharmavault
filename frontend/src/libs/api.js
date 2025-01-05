@@ -70,3 +70,22 @@ export const createUser = async (user) => {
   console.log("response", response);
   return response;
 };
+
+export const getMedicines = async() => {
+  const response = await fetchClient(`${API_BASE_URL}/medicines/`, {
+    method: "GET",
+  });
+
+  console.log("response", response);
+  return response;
+};
+
+export const getMedicine = async(id) => {
+  console.log('id', id);
+  const response = await fetchClient(`${API_BASE_URL}/medicines/${id}/`, {
+    method: "GET",
+  });
+
+  console.log("response", response);
+  return response;
+};
