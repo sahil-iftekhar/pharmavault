@@ -33,13 +33,27 @@ class UserSerializer(serializers.ModelSerializer):
                 'style': {'input_type': 'password'}
             }
         }
-#     INSERT INTO auth_user (username, email, password, date_joined)
+# INSERT INTO auth_user (username, email, password, date_joined)
 # VALUES ('testuser', 'test@example.com', 'hashed_password_here', '2025-01-07 12:00:00');
-    
     def create(self, validated_data): 
         return get_user_model().objects.create_user(**validated_data)
     
     def update(self, instance, validated_data):
+
+# UPDATE User
+# SET first_name = '<first_name>',
+#     last_name = '<last_name>',
+#     email = '<email>'
+# WHERE id = <user_id>;
+
+# IF '<new_password>' IS NOT NULL THEN
+#     SET @hashed_password = hash_password('<new_password>');
+    
+#     UPDATE User
+#     SET password = @hashed_password
+#     WHERE id = <user_id>;
+# END IF;
+
         password = validated_data.pop('password', None)
         instance = super().update(instance, validated_data)
         if password:
@@ -55,6 +69,17 @@ class CustomerSerializer(UserSerializer):
         model = Customer
         
     def create(self, validated_data):
+# INSERT INTO Customer (email, first_name, last_name)
+# VALUES ('<email>', '<first_name>', '<last_name>');
+
+# IF '<password>' IS NOT NULL THEN
+#     SET @hashed_password = hash_password('<password>');
+    
+#     UPDATE Customer
+#     SET password = @hashed_password
+#     WHERE email = '<email>';
+# END IF;
+
         password = validated_data['password']
         customer = Customer.objects.create(**validated_data)
         if password:
@@ -70,6 +95,17 @@ class EmployeeSerializer(UserSerializer):
         model = Employee
         
     def create(self, validated_data):
+# INSERT INTO Employee (email, first_name, last_name)
+# VALUES ('<email>', '<first_name>', '<last_name>');
+
+# IF '<password>' IS NOT NULL THEN
+#     SET @hashed_password = hash_password('<password>');
+    
+#     UPDATE Employee
+#     SET password = @hashed_password
+#     WHERE email = '<email>';
+# END IF;
+
         password = validated_data['password']
         customer = Employee.objects.create(**validated_data)
         if password:
@@ -85,6 +121,18 @@ class SupplierSerializer(UserSerializer):
         model = Supplier
         
     def create(self, validated_data):
+# INSERT INTO Supplier (email, first_name, last_name)
+# VALUES ('<email>', '<first_name>', '<last_name>');
+
+
+# IF '<password>' IS NOT NULL THEN
+#     SET @hashed_password = hash_password('<password>');
+    
+#     UPDATE Supplier
+#     SET password = @hashed_password
+#     WHERE email = '<email>';
+# END IF;
+
         password = validated_data['password']
         customer = Supplier.objects.create(**validated_data)
         if password:
@@ -142,6 +190,26 @@ class OrderSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'customer', 'placed_date', 'slug']
         
     def _get_or_create_medicines(self, medicines, order):
+# DECLARE @medicine_id INT;
+
+# SELECT @medicine_id = id
+# FROM Medicine
+# WHERE name = '<medicine_name>';
+
+# IF @medicine_id IS NULL
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message)
+#     VALUES ('Medicine does not exist.');
+#     -- Return to stop further processing
+#     RETURN;
+# END;
+
+# INSERT INTO OrderedMedicine (order_id, medicine_id, quantity, dosage)
+# VALUES (<order_id>, @medicine_id, <quantity>, <dosage>);
+
+# INSERT INTO OrderMedicines (order_id, ordered_medicine_id)
+# VALUES (<order_id>, LAST_INSERT_ID());
+
         """Handle getting or creating medicines as needed."""
 
         for medicine in medicines:
@@ -161,6 +229,16 @@ class OrderSerializer(serializers.ModelSerializer):
             order.medicines.add(ordered_medicine_obj)
             
     def _get_or_create_prescription_images(self, prescription_images, order):
+# DECLARE @prescription_image_id INT;
+
+# INSERT INTO OrderedPrescriptionImage (order_id, image_field, other_field)
+# VALUES (<order_id>, '<image_file>', '<other_field_value>');
+
+# SET @prescription_image_id = LAST_INSERT_ID();
+
+# INSERT INTO OrderPrescriptionImages (order_id, ordered_prescription_image_id)
+# VALUES (<order_id>, @prescription_image_id);
+
         """Handle getting or creating prescription images as needed."""
         for prescription_image in prescription_images:
             prescription_image_obj = OrderedPrescriptionImage.objects.create(
@@ -170,6 +248,50 @@ class OrderSerializer(serializers.ModelSerializer):
             order.prescription_images.add(prescription_image_obj)
             
     def create(self, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# SELECT id
+# FROM Customer
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM Customer WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message)
+#     VALUES ('Customer does not exist.');
+#     RETURN;
+# END;
+
+# INSERT INTO Order (customer_id, other_order_fields)
+# VALUES (<customer_id>, <other_order_values>);
+
+# FOR EACH medicine IN medicines
+# BEGIN
+#     SELECT id
+#     FROM Medicine
+#     WHERE name = '<medicine_name>';
+
+#     IF NOT EXISTS (SELECT 1 FROM Medicine WHERE name = '<medicine_name>')
+#     BEGIN
+#         INSERT INTO ErrorResponse (error_message)
+#         VALUES ('Medicine does not exist.');
+#         RETURN;
+#     END;
+
+#     INSERT INTO OrderedMedicine (order_id, medicine_id, quantity, dosage)
+#     VALUES (<order_id>, <medicine_id>, <quantity>, <dosage>);
+# END;
+
+# COMMIT;
+
         medicines = validated_data.pop('medicines', [])
         prescription_images = validated_data.pop('prescription_images', [])
         user = self.context['request'].user
@@ -192,6 +314,45 @@ class OrderSerializer(serializers.ModelSerializer):
         return order
     
     def update(self, instance, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# UPDATE Order
+# SET field1 = '<new_value1>', field2 = '<new_value2>'
+# WHERE id = <order_id>;
+
+# DELETE FROM OrderMedicines
+# WHERE order_id = <order_id>;
+
+# FOR EACH medicine IN medicines
+# BEGIN
+#     SELECT id
+#     FROM Medicine
+#     WHERE name = '<medicine_name>';
+
+#     IF NOT EXISTS (SELECT 1 FROM Medicine WHERE name = '<medicine_name>')
+#     BEGIN
+#         INSERT INTO ErrorResponse (error_message)
+#         VALUES ('Medicine does not exist.');
+#         RETURN;
+#     END;
+
+#     INSERT INTO OrderedMedicine (order_id, medicine_id, quantity, dosage)
+#     VALUES (<order_id>, <medicine_id>, <quantity>, <dosage>);
+# END;
+
+# DELETE FROM OrderPrescriptionImages
+# WHERE order_id = <order_id>;
+# COMMIT;
+
         medicines = validated_data.pop('medicines', [])
         prescription_images = validated_data.pop('prescription_images', [])
         user = self.context['request'].user
@@ -229,6 +390,20 @@ class FeedbackSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at']
         
     def create(self, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# INSERT INTO Order (customer_id, order_field1, order_field2, ...)
+# VALUES (<customer_id>, '<order_value1>', '<order_value2>', ...);
+
         print('validated_data', validated_data)
         user = self.context['request'].user
         
@@ -238,6 +413,22 @@ class FeedbackSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# UPDATE Order
+# SET field1 = '<new_value1>', field2 = '<new_value2>', ...
+# WHERE id = <order_id>;
+# COMMIT;
+
         user = self.context['request'].user
         
         if not user or not user.is_authenticated:
@@ -256,6 +447,31 @@ class PaymentSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'customer', 'slug']
         
     def create(self, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# SELECT id
+# FROM Customer
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM Customer WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('Customer does not exist.');
+#     RETURN;
+# END;
+
+# INSERT INTO Order (customer_id, order_field1, order_field2, ...)
+# VALUES (<customer_id>, '<order_value1>', '<order_value2>', ...);
+
         user = self.context['request'].user
         customer = Customer.objects.get(email=user)
         
@@ -293,6 +509,38 @@ class CartSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'customer', 'slug']
 
     def _get_or_create_medicines(self, medicines, cart):
+# FOR EACH medicine IN medicines LOOP
+#     SET medicine_name = medicine.medicine;
+#     SET medicine_quantity = CAST(medicine.quantity AS INT);
+    
+#     SELECT id
+#     FROM Medicine
+#     WHERE name = medicine_name;
+
+#     IF NOT EXISTS (SELECT 1 FROM Medicine WHERE name = medicine_name) 
+#     BEGIN
+#         INSERT INTO ErrorResponse (error_message) 
+#         VALUES ('Medicine does not exist.');
+#         RETURN;
+#     END;
+
+#     SELECT id
+#     FROM CartMedicine
+#     WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>;
+
+#     IF EXISTS (SELECT 1 FROM CartMedicine WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>) 
+#     BEGIN
+#         UPDATE CartMedicine
+#         SET quantity = quantity + medicine_quantity
+#         WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>;
+#     END;
+#     ELSE
+#     BEGIN
+#         INSERT INTO CartMedicine (cart_id, medicine_id, quantity)
+#         VALUES (<cart_id>, <medicine_id>, medicine_quantity);
+#     END;
+# END;
+
         """Handle getting or creating medicines as needed."""
         for medicine in medicines:
             print('medicine', medicine)
@@ -320,6 +568,69 @@ class CartSerializer(serializers.ModelSerializer):
                 cart.medicines.add(cart_medicine_obj)
 
     def create(self, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     -- Raise a permission denied error
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# SELECT id
+# FROM Customer
+# WHERE email = '<user_email>';
+
+# -- If no customer exists for the given email, raise an error
+# IF NOT EXISTS (SELECT 1 FROM Customer WHERE email = '<user_email>') 
+# BEGIN
+#     -- Raise customer not found error
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('Customer does not exist.');
+#     RETURN;
+# END;
+
+# INSERT INTO Cart (customer_id, cart_field1, cart_field2, ...)
+# VALUES (<customer_id>, '<cart_value1>', '<cart_value2>', ...);
+
+# FOR EACH medicine IN medicines LOOP
+#     SET medicine_name = medicine.medicine;
+#     SET medicine_quantity = CAST(medicine.quantity AS INT);
+    
+#     SELECT id
+#     FROM Medicine
+#     WHERE name = medicine_name;
+
+#     IF NOT EXISTS (SELECT 1 FROM Medicine WHERE name = medicine_name) 
+#     BEGIN
+#         INSERT INTO ErrorResponse (error_message) 
+#         VALUES ('Medicine does not exist.');
+#         RETURN;
+#     END;
+
+#     SELECT id
+#     FROM CartMedicine
+#     WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>;
+
+#     IF EXISTS (SELECT 1 FROM CartMedicine WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>) 
+#     BEGIN
+#         UPDATE CartMedicine
+#         SET quantity = quantity + medicine_quantity
+#         WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>;
+#     END;
+#     ELSE
+#     BEGIN
+#         INSERT INTO CartMedicine (cart_id, medicine_id, quantity)
+#         VALUES (<cart_id>, <medicine_id>, medicine_quantity);
+#     END;
+# END;
+
+# -- Step 5: Commit the transaction
+# COMMIT;
+
         medicines = validated_data.pop('medicines', [])
         user = self.context['request'].user
         customer = Customer.objects.get(email=user)
@@ -335,6 +646,71 @@ class CartSerializer(serializers.ModelSerializer):
         return cart
 
     def update(self, instance, validated_data):
+# SELECT id
+# FROM User
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM User WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('User is not authenticated.');
+#     RETURN;
+# END;
+
+# SELECT id
+# FROM Customer
+# WHERE email = '<user_email>';
+
+# IF NOT EXISTS (SELECT 1 FROM Customer WHERE email = '<user_email>') 
+# BEGIN
+#     INSERT INTO ErrorResponse (error_message) 
+#     VALUES ('Customer does not exist.');
+#     RETURN;
+# END;
+
+# UPDATE Cart
+# SET field1 = '<updated_value1>', field2 = '<updated_value2>', ...
+# WHERE id = <cart_id>;
+
+# IF '<request_method>' = 'PUT' 
+# BEGIN
+#     DELETE FROM CartMedicine WHERE cart_id = <cart_id>;
+# END;
+
+# FOR EACH medicine IN medicines LOOP
+#     SET medicine_name = medicine.medicine;
+#     SET medicine_quantity = CAST(medicine.quantity AS INT);
+    
+#     SELECT id
+#     FROM Medicine
+#     WHERE name = medicine_name;
+
+#     IF NOT EXISTS (SELECT 1 FROM Medicine WHERE name = medicine_name) 
+#     BEGIN
+#         INSERT INTO ErrorResponse (error_message) 
+#         VALUES ('Medicine does not exist.');
+#         RETURN;
+#     END;
+
+#     SELECT id
+#     FROM CartMedicine
+#     WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>;
+
+#     IF EXISTS (SELECT 1 FROM CartMedicine WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>) 
+#     BEGIN
+#         UPDATE CartMedicine
+#         SET quantity = quantity + medicine_quantity
+#         WHERE cart_id = <cart_id> AND medicine_id = <medicine_id>;
+#     END;
+#     ELSE
+#     BEGIN
+#         INSERT INTO CartMedicine (cart_id, medicine_id, quantity)
+#         VALUES (<cart_id>, <medicine_id>, medicine_quantity);
+#     END;
+# END;
+
+# COMMIT;
+
         print('validated_data', validated_data)
         medicines = validated_data.pop('medicines', None)
         user = self.context['request'].user
