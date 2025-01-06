@@ -37,3 +37,21 @@ export function LogoutButton() {
     </form>
   );
 }
+
+export function AddToCartButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending} type="submit" className={classes.addToCart} >
+      {pending ? 'Adding to cart...' : 'Add to cart'}
+    </button>
+  );
+}
+
+export function ViewDetailsButton() {
+  return (
+    <button type="submit" className={classes.addToCart} >
+      View Details
+    </button>
+  );
+}

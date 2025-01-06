@@ -14,7 +14,8 @@ from .models import (
     OrderedMedicine,
     OrderedPrescriptionImage,
     Payment,
-    Cart
+    Cart,
+    CartMedicine
 )
 
 
@@ -143,7 +144,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
         for medicine in medicines:
             medicine_name = medicine.pop('medicine')
-            print(medicine_name)
             medicine_obj = Medicine.objects.get(name=medicine_name)
             print(medicine_obj)
             
@@ -275,31 +275,84 @@ class PaymentSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
-        
-class CartSerializer(serializers.ModelSerializer):
-    """Cart Serializer."""
+class CartMedicineSerializer(serializers.ModelSerializer):
+    """Cart Medicine Serializer."""
     
     class Meta:
-        model = Cart
+        model = CartMedicine
         fields = '__all__'
-        read_only_fields = ['id', 'customer', 'slug']
-        
-    def create(self, validated_data):
-        user = self.context['request'].user
-        
-        if not user or not user.is_authenticated:
-            raise PermissionDenied("User is not authenticated.")
-        
-        validated_data['customer'] = user
-        return super().create(validated_data)
+        read_only_fields = ['id', 'cart']  
     
-    def update(self, instance, validated_data):
+class CartSerializer(serializers.ModelSerializer):
+    """Cart Serializer."""
+    medicines = CartMedicineSerializer(many=True, required=False)
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'customer', 'medicines', 'slug']
+        read_only_fields = ['id', 'customer', 'slug']
+
+    def _get_or_create_medicines(self, medicines, cart):
+        """Handle getting or creating medicines as needed."""
+        for medicine in medicines:
+            print('medicine', medicine)
+            medicine['quantity'] = int(medicine['quantity'])
+            medicine_name = medicine.pop('medicine')
+            medicine_obj = Medicine.objects.get(name=medicine_name)
+            
+            if medicine_obj is None:
+                raise serializers.ValidationError("Medicine does not exist.")
+            
+            if cart.medicines.filter(medicine=medicine_obj).exists():
+                cart_medicine = cart.medicines.get(medicine=medicine_obj)
+            else:
+                cart_medicine = None
+                
+            if cart_medicine:
+                cart_medicine.quantity += medicine['quantity']
+                cart_medicine.save()
+            else:
+                cart_medicine_obj = CartMedicine.objects.create(
+                    cart=cart,
+                    medicine=medicine_obj,
+                    **medicine
+                )
+                cart.medicines.add(cart_medicine_obj)
+
+    def create(self, validated_data):
+        medicines = validated_data.pop('medicines', [])
         user = self.context['request'].user
+        customer = Customer.objects.get(email=user)
         
-        if not user or not user.is_authenticated:
+        if not customer or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
+        validated_data['customer'] = customer
+        cart = Cart.objects.create(**validated_data)
+        self._get_or_create_medicines(medicines, cart)
+        
+        cart.save()
+        return cart
+
+    def update(self, instance, validated_data):
+        print('validated_data', validated_data)
+        medicines = validated_data.pop('medicines', None)
+        user = self.context['request'].user
+        customer = Customer.objects.get(email=user)
+        
+        if not customer or not user.is_authenticated:
+            raise PermissionDenied("User is not authenticated.")
+        
+        validated_data['customer'] = customer
         instance = super().update(instance, validated_data)
+        
+        if self.context['request'].method == 'PUT':
+            instance.medicines.clear()
+            
+            CartMedicine.objects.filter(cart=instance).delete()
+            
+        if medicines:
+            self._get_or_create_medicines(medicines, instance)
+
         instance.save()
         return instance

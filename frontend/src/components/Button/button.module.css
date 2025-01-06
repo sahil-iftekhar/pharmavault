@@ -42,3 +42,18 @@
 .logoutButton:hover:not(:disabled) {
   background-color: grey;
 }
+
+.addToCart {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.addToCart:hover {
+  opacity: 0.9;
+}

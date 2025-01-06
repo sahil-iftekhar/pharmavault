@@ -1,20 +1,9 @@
-.container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.container h1 {
-    margin-bottom: 2rem;
-    color: var(--text-color);
-}
-
 .cartItems {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 2rem;
-    }
+}
 
 .cartItem {
     display: grid;
@@ -101,13 +90,15 @@
     padding: 2rem;
 }
 
-.emptyCart button {
+.continueShoppingButton {
+    display: inline-block;
     margin-top: 1rem;
     padding: 0.75rem 1.5rem;
     background: var(--primary-color);
     color: white;
     border: none;
     border-radius: 4px;
+    text-decoration: none;
 }
 
 @media (max-width: 768px) {
@@ -120,5 +111,5 @@
     justify-content: center;
 }
 }
-
+  
   

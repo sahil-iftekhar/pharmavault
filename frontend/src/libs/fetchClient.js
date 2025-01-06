@@ -11,13 +11,9 @@ export const fetchClient = async (url, options = {}) => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('accessToken')?.value;
 
-  console.log("accessToken fetch client", accessToken);
-
   if (accessToken) {
     options.headers.Authorization = `Bearer ${accessToken}`;
   };
-
-  console.log("options", options);
 
   try {
     const response = await fetch(url, options);

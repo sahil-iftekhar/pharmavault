@@ -3,6 +3,7 @@ import { useActionState } from 'react';
 import { useEffect, startTransition } from 'react';
 import Link from 'next/link';
 import { fetchMedicines } from '@/actions/medicine';
+import { ViewDetailsButton } from '@/components/Button/button';
 import styles from './page.module.css';
 import { useRef } from 'react';
 
@@ -38,13 +39,13 @@ export default function Medicine() {
       <div className={styles.productGrid}>
         {state.medicines && state.medicines.map(product => (
           <div key={product.id} className={styles.productCard}>
-            <Link href={`/pharmavault/medicine/${product.id}`} passHref>
               <div className={styles.productInfo}>
                 <h3>{product.name}</h3>
                 <p className={styles.price}>${product.price}</p>
-                <button className={styles.addToCart}>Add to Cart</button>
+                <Link href={`/pharmavault/medicine/${product.id}`} passHref>
+                  <ViewDetailsButton />
+                </Link>
               </div>
-            </Link>
           </div>
         ))}
       </div>

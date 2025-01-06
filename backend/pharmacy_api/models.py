@@ -265,10 +265,8 @@ class Payment(models.Model):
     
 class Cart(models.Model):
     """Cart Model"""
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    status = models.BooleanField(default=False)
-    created_at = models.DateField(auto_now_add=True)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+    medicines = models.ManyToManyField('CartMedicine', related_name='cart_medicines', blank=True)
     slug = models.SlugField(unique=True, blank=True, null=True)
     
     def save(self, *args, **kwargs):
@@ -278,3 +276,17 @@ class Cart(models.Model):
         
     def __str__(self):
         return f"Cart #{self.id}"
+    
+class CartMedicine(models.Model):
+    """Cart Medicine Model"""
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    
+    def save(self, *args, **kwargs):
+        """Running Validators before saving"""
+        self.full_clean()
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f"Cart Medicine #{self.id}"

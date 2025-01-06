@@ -6,28 +6,20 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.content}>
         <div className={styles.section}>
-          <h3>HealthyRx Pharmacy</h3>
-          <p>Providing quality healthcare since 1995</p>
+          <h3>Pharmavault</h3>
+          <p>Providing quality medicine delivery since 2025</p>
         </div>
         
         <div className={styles.section}>
           <h3>Contact Us</h3>
-          <p>123 Health Street, Wellness City</p>
-          <p>Phone: (123) 456-7890</p>
-          <p>Email: info@healthyrx.com</p>
-        </div>
-        
-        <div className={styles.section}>
-          <h3>Quick Links</h3>
-          <Link href="/about">About Us</Link>
-          <Link href="/services">Services</Link>
-          <Link href="/products">Products</Link>
-          <Link href="/contact">Contact</Link>
+          <p>11/A, Rankin Street, Wari, Dhaka</p>
+          <p>Phone: +8801856664080</p>
+          <p>Email: info@pharmavault.com</p>
         </div>
       </div>
       
       <div className={styles.bottom}>
-        <p>&copy; 2024 HealthyRx Pharmacy. All rights reserved.</p>
+        <p>&copy; 2025 Pharmavault. All rights reserved.</p>
       </div>
     </footer>
   );

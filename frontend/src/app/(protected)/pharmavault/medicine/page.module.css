@@ -77,21 +77,6 @@
     margin-bottom: 1rem;
 }
 
-.addToCart {
-    width: 100%;
-    padding: 0.75rem;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-}
-
-.addToCart:hover {
-    opacity: 0.9;
-}
-
 @media (max-width: 768px) {
 .filters {
     justify-content: center;

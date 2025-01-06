@@ -71,6 +71,16 @@ export const createUser = async (user) => {
   return response;
 };
 
+// export const updateUser = async (user) => {
+//   const response = await fetchClient(`${API_BASE_URL}/customers/${user.id}/`, {
+//     method: "PUT",
+//     body: JSON.stringify(user),
+//   });
+
+//   console.log("response", response);
+//   return response;
+// };
+
 export const getMedicines = async() => {
   const response = await fetchClient(`${API_BASE_URL}/medicines/`, {
     method: "GET",
@@ -81,9 +91,37 @@ export const getMedicines = async() => {
 };
 
 export const getMedicine = async(id) => {
-  console.log('id', id);
   const response = await fetchClient(`${API_BASE_URL}/medicines/${id}/`, {
     method: "GET",
+  });
+
+  console.log("response", response);
+  return response;
+};
+
+export const getCart = async() => {
+  const response = await fetchClient(`${API_BASE_URL}/carts/`, {
+    method: "GET",
+  });
+
+  console.log("response", response);
+  return response;
+};
+
+export const patchCart = async(id, data) => {
+  const response = await fetchClient(`${API_BASE_URL}/carts/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
+  console.log("response", response);
+  return response;
+};
+
+export const putCart = async(id, data) => {
+  const response = await fetchClient(`${API_BASE_URL}/carts/${id}/`, {
+    method: "PUT",
+    body: JSON.stringify(data),
   });
 
   console.log("response", response);

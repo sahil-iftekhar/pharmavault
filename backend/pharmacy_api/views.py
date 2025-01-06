@@ -118,6 +118,7 @@ class CustomerViewSet(UserViewSet):
         return Customer.objects.all()
     
     def create(self, request, *args, **kwargs):
+        """Create a new customer and automatically create a cart."""
         print(request.data)
         email = request.data.get('email')
         if get_user_model().objects.filter(email=email).exists():
@@ -126,7 +127,15 @@ class CustomerViewSet(UserViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
-        return super().create(request, *args, **kwargs)
+        response = super().create(request, *args, **kwargs)
+
+        # Check if the customer was created successfully
+        if response.status_code == status.HTTP_201_CREATED:
+            customer_id = response.data['id']
+            customer = Customer.objects.get(id=customer_id)
+            Cart.objects.create(customer=customer)
+
+        return response
     
 class EmployeeViewSet(UserViewSet):
     """Employee ViewSet"""
@@ -302,9 +311,21 @@ class PaymentViewSet(ModelViewSet):
     
 class CartViewSet(ModelViewSet):
     """Cart ViewSet"""
-    queryset = Cart.objects.all()
     serializer_class = CartSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        
+        if Customer.objects.filter(id= user.id).exists():
+            customer = Customer.objects.get(id=user.id)
+        else:
+            return Response(
+                {'error': 'You are not a customer.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+            
+        return Cart.objects.filter(customer=customer)
         
         
