@@ -1,14 +1,16 @@
 'use client';
-import { useActionState } from 'react';
+import { useState, useActionState } from 'react';
+import { userRole } from '@/actions/login';
 import { useEffect, startTransition } from 'react';
 import Link from 'next/link';
 import { fetchMedicines } from '@/actions/medicine';
-import { ViewDetailsButton } from '@/components/Button/button';
+import { ViewDetailsButton, NewMedicineButton } from '@/components/Button/button';
 import styles from './page.module.css';
 import { useRef } from 'react';
 
 export default function Medicine() {
   const [state, action] = useActionState(fetchMedicines, { medicines: [], error: null });
+  const [isEmployee, setIsEmployee] = useState(false);
   const hasFetched = useRef(false); // Use a ref to track if data has been fetched
 
   useEffect(() => {
@@ -23,6 +25,9 @@ export default function Medicine() {
           }
         });
       }
+
+      const result = await userRole();
+      setIsEmployee(result === 'Employee' || result === 'Supplier'); 
     };
 
     fetchData();
@@ -34,6 +39,14 @@ export default function Medicine() {
 
       {state.error && <p className={styles.error}>{state.error}</p>}
 
+      <div>
+        {isEmployee && (
+          <Link href="/pharmavault/medicine/new" passHref>
+            <NewMedicineButton />
+          </Link>
+        )}
+      </div>
+      <br />
       {!state.medicines && !state.error && <p className={styles.loading}>Loading...</p>}
 
       <div className={styles.productGrid}>

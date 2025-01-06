@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from .models import (
@@ -52,6 +53,7 @@ class LoginView(TokenObtainPairView):
         
         # Add the user role to the response data
         response.data['user_role'] = user_role
+        response.data['user_id'] = user.id
         
         return response
 
@@ -275,6 +277,8 @@ class OrderViewSet(ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN,
             )
         
+        print("request", request.data)
+        print("customer", current_user.id)
         return super().create(request, *args, **kwargs)
     
     def update(self, request, *args, **kwargs):
@@ -307,6 +311,11 @@ class FeedbackViewSet(ModelViewSet):
     serializer_class = FeedbackSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        
+        return super().create(request, *args, **kwargs)
     
 class PaymentViewSet(ModelViewSet):
     """Payment ViewSet"""

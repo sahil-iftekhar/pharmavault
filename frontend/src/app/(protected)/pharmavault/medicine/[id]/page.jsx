@@ -1,53 +1,90 @@
 'use client';
-import { useActionState } from 'react';
-import { patchCartItems } from '@/actions/cart';
+import { use, useActionState, useState } from 'react';
+import { userRole } from '@/actions/login';
+import { patchCartItems } from '@/actions/cart'; // Assuming deleteMedicine is defined
 import { useEffect, startTransition } from 'react';
-import { fetchMedicine } from '@/actions/medicine';
-import { AddToCartButton } from '@/components/Button/button';
-import { use } from 'react';
+import { fetchMedicine, updateMedicine, removeMedicine } from '@/actions/medicine';
+import { AddToCartButton, DeleteMedicineButton, UpdateMedicineButton } from '@/components/Button/button';
 import styles from './page.module.css';
 import { useRef } from 'react';
-
+import { useRouter } from 'next/navigation';
 
 export default function Medicine({ params }) {
   const { id } = use(params);
   const [state, action] = useActionState(fetchMedicine, { medicine: [id], error: null });
   const [cartItems, patchAction] = useActionState(patchCartItems, { error: null });
+  const [isEmployee, setIsEmployee] = useState(false);
   const hasFetched = useRef(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!hasFetched.current) { // Check if data has already been fetched
-        hasFetched.current = true; // Set the flag to true
+      if (!hasFetched.current) {
+        hasFetched.current = true;
         startTransition(() => {
           try {
-            action(state); // Trigger the server action to fetch the medicines
+            action(state);
           } catch (error) {
             console.error("Error fetching medicines:", error);
           }
         });
       }
+
+      const result = await userRole();
+      setIsEmployee(result === 'Employee'); 
     };
 
     fetchData();
-  }, [action]); // Dependencies array includes action
+  }, [action]);
 
   const addToCart = async (event) => {
-    event.preventDefault(); // Prevent the default form submission
-
-    const formData = new FormData(event.target); // Get the form data
-    const quantity = formData.get('quantity'); // Extract the quantity
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const quantity = formData.get('quantity');
 
     console.log(`Added product ${id} to cart with quantity ${quantity}`);
 
-    // Call the patch action with the form data
     startTransition(() => {
       try {
         patchAction({ id, quantity });
       } catch (error) {
-        console.error("Error fetching medicines:", error);
+        console.error("Error adding to cart:", error);
       }
     });
+  };
+
+  const updateStock = async (event) => {
+    event.preventDefault();
+    const updateformData = new FormData(event.target);
+    const newStock = updateformData.get('stock');
+
+    if (newStock <= 0) {
+      console.log("Stock cannot be negative or zero.");
+      return;
+    }
+
+    console.log(`Updating stock for product ${id} to ${newStock}`);
+
+    try {
+      await updateMedicine({ id, stock: newStock });
+      router.push('/pharmavault/medicine');
+      
+    } catch (error) {
+      console.error("Error updating stock:", error);
+    }
+  };
+
+  const handleDelete = async (event) => {
+    event.preventDefault();
+    console.log(`Deleting product ${id}`);
+
+    try {
+      await removeMedicine(id)
+      router.push('/pharmavault/medicine');
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+
   };
 
   return (
@@ -62,15 +99,38 @@ export default function Medicine({ params }) {
             <p className={styles.description}>Stock: {state.medicine.stock}</p>
             <p className={styles.price}>{state.medicine.expiry_date}</p>
             <p className={styles.price}>${state.medicine.price}</p>
-            <form onSubmit={addToCart}>
+            {!isEmployee && <form onSubmit={addToCart}>
               <input type="hidden" name="quantity" value="1" required/>
               <AddToCartButton />
-            </form>
+            </form>}
           </div>
         </div>
       </div>
       }
+      <br />
+      {isEmployee && (
+        <div>
+          <h2>Update Stock</h2>
+          <form onSubmit={updateStock}>
+            <div className={styles.formGroup}>
+              <label htmlFor="stock">New Stock:</label>
+              <input
+                type="number"
+                id="stock"
+                name="stock"
+                min="0"
+                defaultValue={state.medicine.stock}
+                required
+              />
+            </div>
+            <UpdateMedicineButton />
+          </form>
+          <br />
+          <form onSubmit={handleDelete}>
+            <DeleteMedicineButton />
+          </form>
+        </div>
+      )}
     </div>
   );
 }
-

@@ -66,13 +66,13 @@ export async function createNewUser(prevState, formData) {
     const response = await createUser(user_data);
     console.log(response);
     
-    if (response.status !== 200) {
+    if (response.status) {
       console.log("User creation failed");
       return {
         errors: "Email or phone number taken"
       };
     } else {
-      console.log("Login successful");
+      console.log("User creation successful");
       revalidatePath(DEFAULT_LOGIN_REDIRECT);
       return {
         status: 200

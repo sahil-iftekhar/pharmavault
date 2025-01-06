@@ -33,8 +33,10 @@ class UserSerializer(serializers.ModelSerializer):
                 'style': {'input_type': 'password'}
             }
         }
-        
-    def create(self, validated_data):
+#     INSERT INTO auth_user (username, email, password, date_joined)
+# VALUES ('testuser', 'test@example.com', 'hashed_password_here', '2025-01-07 12:00:00');
+    
+    def create(self, validated_data): 
         return get_user_model().objects.create_user(**validated_data)
     
     def update(self, instance, validated_data):
@@ -171,7 +173,7 @@ class OrderSerializer(serializers.ModelSerializer):
         medicines = validated_data.pop('medicines', [])
         prescription_images = validated_data.pop('prescription_images', [])
         user = self.context['request'].user
-
+        
         if not user or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
@@ -184,6 +186,7 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
         self._get_or_create_medicines(medicines, order)
         self._get_or_create_prescription_images(prescription_images, order)
+        
         
         order.save()
         return order
@@ -222,16 +225,16 @@ class FeedbackSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Feedback
-        fields = '__all__'
-        read_only_fields = ['id', 'customer']
+        fields = ['id', 'name', 'feedback_text', 'rating', 'created_at']
+        read_only_fields = ['id', 'created_at']
         
     def create(self, validated_data):
+        print('validated_data', validated_data)
         user = self.context['request'].user
         
         if not user or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
@@ -240,7 +243,6 @@ class FeedbackSerializer(serializers.ModelSerializer):
         if not user or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
         instance = super().update(instance, validated_data)
         instance.save()
         return instance
@@ -255,11 +257,12 @@ class PaymentSerializer(serializers.ModelSerializer):
         
     def create(self, validated_data):
         user = self.context['request'].user
+        customer = Customer.objects.get(email=user)
         
-        if not user or not user.is_authenticated:
+        if not customer or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
+        validated_data['customer'] = customer
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
@@ -268,7 +271,6 @@ class PaymentSerializer(serializers.ModelSerializer):
         if not user or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
         instance = super().update(instance, validated_data)
         instance.save()
         return instance

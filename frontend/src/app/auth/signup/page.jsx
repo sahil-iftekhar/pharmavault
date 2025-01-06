@@ -8,7 +8,7 @@ import { createNewUser } from "@/actions/signup";
 import { DEFAULT_LOGIN_REDIRECT } from '@/route';
 
 export default function loginPage () {
-    const [state, formAction] = useActionState(createNewUser, { errors: null, error_data: null});
+  const [state, formAction] = useActionState(createNewUser, { errors: null, error_data: null});
     
   if (state.status === 200) {
     window.location.href = DEFAULT_LOGIN_REDIRECT;

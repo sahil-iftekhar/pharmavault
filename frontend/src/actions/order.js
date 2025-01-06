@@ -1,6 +1,7 @@
 'use server';
 
 import { getOrders, getOrder, createOrder, patchOrder, deleteOrder } from '@/libs/api';
+import { revalidatePath } from 'next/cache';
 
 
 export const fetchOrders = async () => {
@@ -33,18 +34,33 @@ export const fetchOrder = async (orderId) => {
   };
 };
 
-export const removeOrder = async (prevState, formData) => {
+export const postOrder = async (prevState, formData) => {
+  const order_obj = {
+    delivery_date: formData.deliveryDate,
+    delivery_type: formData.deliveryType,
+    medicines: formData.medicines,
+    prescription_images: formData.prescriptionImages
+  }
+  console.log('prescription_images', formData.prescriptionImages);
   try {
-    const order = await deleteOrder(formData.order_id);
-    console.log('order', order);
-    if (order.status !== 204) {
-      return { error: "Failed to fetch cart items. Please try again later." };
-    };
-
-    return { order };
+    console.log('formData', order_obj);
+    const response = await createOrder(order_obj);
+    console.log('response', response);
+    if (response.status === 400) {
+      console.log("Order creation failed");
+      return {
+        errors: "Failed to create order. Please try again later."
+      };
+    } else {
+      console.log("Order created successfully");
+      revalidatePath("/pharamavault/order");
+      return {
+        status: 200,
+      }
+    }
   } catch (error) {
-    console.error("Error fetching cart items:", error);
-    return { error: "Failed to fetch cart items. Please try again later." };
+    console.error("Error creating user:", error);
+    return { error: "Failed to create user. Please try again later." };
   };
 };
 
@@ -76,65 +92,17 @@ export const patchOrderItems = async (prevState, formData) => {
   };
 };
 
-// export const patchCartItems = async (prevState, formData) => {
-//   const medicineId = formData.id
-//   const quantity = formData.quantity
-//   try {
-//     const cart = await getCart();
-//     console.log('cart', cart);
-//     if (cart.status) {
-//       return { error: "Failed to fetch cart items. Please try again later." };
-//     };
+export const removeOrder = async (prevState, formData) => {
+  try {
+    const order = await deleteOrder(formData.order_id);
+    console.log('order', order);
+    if (order.status !== 204) {
+      return { error: "Failed to fetch cart items. Please try again later." };
+    };
 
-//     let cart_obj = {
-//       medicines : [
-//         {
-//           medicine: medicineId,
-//           quantity: quantity
-//         }
-//       ]
-//     }
-
-//     const updatedCart = await patchCart(cart[0].id, cart_obj);
-//     if (updatedCart.status) {
-//       return { error: "Failed to update cart items. Please try again later." };
-//     };
-
-//     return { cart: updatedCart };
-//   } catch (error) {
-//     console.error("Error updating cart items:", error);
-//     return { error: "Failed to update cart items. Please try again later." };
-//   };
-// };
-
-// export const putCartItems = async (prevState, formData) => {
-//   console.log('formData', formData);
-//   const form_medicines = formData.medicines
-//   try {
-//     const cart = await getCart();
-//     if (cart.status) {
-//       return { error: "Failed to fetch cart items. Please try again later." };
-//     };
-
-//     let cart_obj = {
-//       medicines : []
-//     }
-
-//     for (const form_medicine of form_medicines) {
-//       cart_obj.medicines.push({
-//         medicine: form_medicine.medicine.id,
-//         quantity: form_medicine.quantity
-//       })
-//     }
-
-//     const updatedCart = await putCart(cart[0].id, cart_obj);
-//     if (updatedCart.status) {
-//       return { error: "Failed to update cart items. Please try again later." };
-//     };
-
-//     return { cart: updatedCart };
-//   } catch (error) {
-//     console.error("Error updating cart items:", error);
-//     return { error: "Failed to update cart items. Please try again later." };
-//   };
-// };
+    return { order };
+  } catch (error) {
+    console.error("Error fetching cart items:", error);
+    return { error: "Failed to fetch cart items. Please try again later." };
+  };
+};

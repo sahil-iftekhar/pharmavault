@@ -18,6 +18,7 @@ export default async function Navbar() {
         <Link href="/pharmavault/medicine">Medicines</Link>
         <Link href="/pharmavault/order">Order</Link>
         {userRole === 'Customer' && <Link href="/pharmavault/cart">Cart</Link>}
+        <Link href="/pharmavault/profile">Profile</Link>
         <LogoutButton />
       </div>
     </nav>

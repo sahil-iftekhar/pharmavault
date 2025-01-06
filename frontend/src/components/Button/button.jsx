@@ -24,6 +24,15 @@ export function SignUpButton () {
   );
 };
 
+export function AddMedicineButton () {
+  const { pending } = useFormStatus()
+  return (
+    <button disabled={pending} type="submit" className={classes.button} >
+      {pending ? 'Adding medicine...' : 'Add Medicine'}
+    </button>
+  );
+};
+
 export function LogoutButton() {
   const [state, action] = useActionState(logoutUser, { errors: null });
   const { pending } = useFormStatus()
@@ -46,12 +55,40 @@ export function AddToCartButton() {
       {pending ? 'Adding to cart...' : 'Add to cart'}
     </button>
   );
-}
+};
 
 export function ViewDetailsButton() {
   return (
     <button type="submit" className={classes.addToCart} >
       View Details
+    </button>
+  );
+};
+
+export function NewMedicineButton() {
+  return (
+    <button type="submit" className={classes.acceptButton} >
+      New Medicine
+    </button>
+  );
+};
+
+export function UpdateMedicineButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending} type="submit" className={classes.acceptButton} >
+      {pending ? 'Updating medicine...' : 'Update Medicine'}    
+    </button>
+  );
+};
+
+export function DeleteMedicineButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending} type="submit" className={classes.cancelButton} >
+      {pending ? 'Deleting medicine...' : 'Delete Medicine'}    
     </button>
   );
 }

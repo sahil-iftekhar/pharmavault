@@ -127,7 +127,9 @@ export default function Cart() {
           </div>
           <div className={styles.total}>
             <h2>Total: ${calculateTotal().toFixed(2)}</h2>
-            <button className={styles.checkoutButton}>Proceed to Checkout</button>
+            <Link href="/pharmavault/order/new">
+              <button className={styles.checkoutButton}>Place Order</button>
+            </Link>
           </div>
         </>
       )}

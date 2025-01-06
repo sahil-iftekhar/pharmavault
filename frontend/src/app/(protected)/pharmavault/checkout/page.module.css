@@ -1,0 +1,141 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+  
+.container h1 {
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+
+.stepIndicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    background-color: #f0f0f0;
+    color: var(--gray-color);
+    position: relative;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -10px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 2px;
+    background-color: #f0f0f0;
+}
+
+.step.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form h2 {
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+}
+
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+.formRow {
+    display: flex;
+    gap: 1rem;
+}
+
+.formRow .formGroup {
+    flex: 1;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.buttons button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.buttons button:hover {
+    opacity: 0.9;
+}
+
+.backButton {
+    background-color: #f0f0f0 !important;
+    color: var(--text-color) !important;
+}
+
+.confirmationDetails {
+    background-color: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.confirmationDetails h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.confirmationDetails p {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+.formRow {
+    flex-direction: column;
+    gap: 0;
+}
+
+.buttons {
+    flex-direction: column-reverse;
+    gap: 1rem;
+}
+
+.buttons button {
+    width: 100%;
+}
+}
+  
+  
