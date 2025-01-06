@@ -196,8 +196,6 @@ class OrderSerializer(serializers.ModelSerializer):
         if not user or not user.is_authenticated:
             raise PermissionDenied("User is not authenticated.")
         
-        validated_data['customer'] = user
-        
         instance = super().update(instance, validated_data)
         
         if medicines:

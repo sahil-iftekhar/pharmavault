@@ -57,3 +57,38 @@
 .addToCart:hover {
   opacity: 0.9;
 }
+
+.cancelButton, .acceptButton, .rejectButton {
+  padding: 10px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+}
+  
+.cancelButton {
+  background-color: #ff4444;
+  color: white;
+}
+
+.cancelButton:hover {
+  opacity: 0.9;
+}
+
+.acceptButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.acceptButton:hover {
+  opacity: 0.9;
+}
+
+.rejectButton {
+  background-color: #ff4444;
+  color: white;
+}
+
+.rejectButton:hover {
+  opacity: 0.9;
+}

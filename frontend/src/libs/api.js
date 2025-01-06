@@ -127,3 +127,50 @@ export const putCart = async(id, data) => {
   console.log("response", response);
   return response;
 };
+
+export const getOrders = async() => {
+  const response = await fetchClient(`${API_BASE_URL}/orders/`, {
+    method: "GET",
+  });
+
+  console.log("response", response);
+  return response;
+};
+
+export const getOrder = async(id) => {
+  const response = await fetchClient(`${API_BASE_URL}/orders/${id}/`, {
+    method: "GET",
+  });
+
+  console.log("response", response);
+  return response;
+}
+
+export const createOrder = async(data) => {
+  const response = await fetchClient(`${API_BASE_URL}/orders/`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+
+  console.log("response", response);
+  return response;
+}
+
+export const patchOrder = async(id, data) => {
+  const response = await fetchClient(`${API_BASE_URL}/orders/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+
+  console.log("response", response);
+  return response;
+}
+
+export const deleteOrder = async(id) => {
+  const response = await fetchClient(`${API_BASE_URL}/orders/${id}/`, {
+    method: "DELETE",
+  }); 
+
+  console.log("response", response);
+  return response;
+}

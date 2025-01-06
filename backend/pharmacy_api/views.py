@@ -254,10 +254,16 @@ class SupplyViewSet(ModelViewSet):
     
 class OrderViewSet(ModelViewSet):
     """Order ViewSet"""
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        current_user = self.request.user
+        if Customer.objects.filter(email=current_user).exists():
+            return Order.objects.filter(customer=current_user)
+        else:
+            return Order.objects.filter(active=True)
     
     def create(self, request, *args, **kwargs):
         current_user = self.request.user
@@ -286,7 +292,7 @@ class OrderViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         current_user = self.request.user
         
-        if not (Employee.objects.filter(email=current_user).exists() 
+        if not (Customer.objects.filter(email=current_user).exists() 
                 or current_user.is_superuser):
             return Response(
                 {'error': 'You do not have permission to delete this order.'},

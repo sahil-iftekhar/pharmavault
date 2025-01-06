@@ -1,5 +1,6 @@
 'use server';
 import { DEFAULT_LOGIN_REDIRECT } from '@/route';
+import { cookies } from 'next/headers';
 import { login } from '@/libs/api';
 import { revalidatePath } from 'next/cache';
 
@@ -43,3 +44,8 @@ export async function loginUser(prevState, formData) {
     }
   }
 };
+
+export async function userRole() {
+  const cookieStore = await cookies();
+  return cookieStore.get('userRole')?.value;
+}

@@ -16,7 +16,7 @@ export default async function Navbar() {
       <div className={styles.links}>
         <Link href="/pharmavault">Home</Link>
         <Link href="/pharmavault/medicine">Medicines</Link>
-        {/* <Link href="/contact">Contact</Link> */}
+        <Link href="/pharmavault/order">Order</Link>
         {userRole === 'Customer' && <Link href="/pharmavault/cart">Cart</Link>}
         <LogoutButton />
       </div>

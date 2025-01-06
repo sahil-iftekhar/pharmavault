@@ -65,3 +65,43 @@ export function SaveCartButton() {
     </button>
   );
 };
+
+export function CancelOrderButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending} type="submit" className={classes.cancelButton} >
+      {pending ? 'Cancelling order...' : 'Cancel Order'}
+    </button>
+  );
+};
+
+export function AcceptOrderButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending} type="submit" className={classes.acceptButton} >
+      {pending ? 'Accepting order...' : 'Accept Order'}
+    </button>
+  );
+};
+
+export function RejectOrderButton() {
+  const { pending } = useFormStatus();
+
+  return (  
+    <button disabled={pending} type="submit" className={classes.rejectButton} >
+      {pending ? 'Rejecting order...' : 'Reject Order'}
+    </button>
+  );
+};
+
+export function DeliveredOrderButton() {
+  const { pending } = useFormStatus();
+
+  return (  
+    <button disabled={pending} type="submit" className={classes.acceptButton} >
+      {pending ? 'Delivering order...' : 'Deliver Order'}
+    </button>
+  );
+}

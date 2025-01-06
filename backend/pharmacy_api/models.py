@@ -148,6 +148,7 @@ class Order(models.Model):
         ('accepted', 'Accepted'),
         ('pending', 'Pending'),
         ('rejected', 'Rejected'),
+        ('delivered', 'Delivered')
     ]
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
