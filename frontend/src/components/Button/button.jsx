@@ -3,7 +3,7 @@
 import { useFormStatus } from "react-dom";
 import { useActionState } from 'react';
 import { logoutUser } from "@/actions/logout";
-import classes from "./button.module.css"
+import classes from "./button.module.css";
 
 export function LoginButton () {
   const { pending } = useFormStatus()
@@ -55,3 +55,13 @@ export function ViewDetailsButton() {
     </button>
   );
 }
+
+export function SaveCartButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button disabled={pending} type="submit" className={classes.button} >
+      {pending ? 'Saving cart...' : 'Save Cart'}
+    </button>
+  );
+};

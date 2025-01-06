@@ -31,3 +31,18 @@ export const fetchMedicine = async (value) => {
     return { error: "Failed to fetch medicine. Please try again later." };
   };
 };
+
+export const fetchMedicineById = async (id) => {
+  console.log(id);
+  try {
+    const medicine = await getMedicine(id);
+    if (medicine.status === 404) {
+      return { error: "Failed to fetch medicines. Please try again later." };
+    }
+    console.log("medicine", medicine);
+    return { medicine };
+  } catch (error) {
+    console.error("Failed to fetch medicine:", error);
+    return { error: "Failed to fetch medicine. Please try again later." };
+  };
+};
